@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -6,9 +7,14 @@ namespace App
 {
     public partial class MainForm : Form
     {
-        public MainForm()
+        private bool isBackgroundMode;
+        private bool isQuiting;
+
+        public MainForm(bool isBgMode)
         {
             InitializeComponent();
+            isBackgroundMode = isBgMode;
+            isQuiting = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -110,6 +116,97 @@ namespace App
                 btnEncrypt.Enabled = true;
             }
 
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            isQuiting = true;
+            Application.Exit();
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            Visible = !Visible;
+        }
+
+        private void checkBoxStartWindows_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateInitWithWindows();
+        }
+
+        private void UpdateInitWithWindows()
+        {
+
+            if (checkBoxStartWindows.Checked)
+            {
+                // app will start with windows
+                var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
+                key.SetValue("SimplePGPUtil", $"\"{Application.ExecutablePath.ToString()}\" /background" );
+            }
+            else
+            {
+                // app will NOT start with windows
+                var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
+                key.DeleteValue("SimplePGPUtil", false);
+            }
+
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            TryRestoreValues();
+        }
+
+        private void TryRestoreValues()
+        {
+            var path = @"SOFTWARE\SimplePGPUtil";
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
+            if (key != null)
+            {
+                txtFileToEncrypt.Text = key.GetValue("FileToEncrypt") != null ? key.GetValue("FileToEncrypt").ToString() : "";
+                txtPublicKeyToEncrypt.Text = key.GetValue("PublicKeyToEncrypt") != null ? key.GetValue("PublicKeyToEncrypt").ToString() : "";
+                txtSaveEncryptedFile.Text = key.GetValue("PathToSaveEncryptedFile") != null ? key.GetValue("PathToSaveEncryptedFile").ToString() : "";
+
+                int initWithWindows = 0;
+                if (key.GetValue("InitWithWindows") != null)
+                {
+                    bool r = int.TryParse(key.GetValue("InitWithWindows").ToString(), out initWithWindows);
+                }
+
+                checkBoxStartWindows.Checked = initWithWindows != 0;
+            }
+        }
+
+        private void MainForm_VisibleChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            TrySaveValues();
+
+            if (checkBoxStartWindows.Checked && !isQuiting)
+            {
+                e.Cancel = true;
+                Visible = false;
+            }
+        }
+
+        private void TrySaveValues()
+        {
+            var path = @"SOFTWARE\SimplePGPUtil";
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
+            if (key == null)
+            {
+                key = Registry.CurrentUser.CreateSubKey(path);
+            }
+
+            key.SetValue("FileToEncrypt", txtFileToEncrypt.Text);
+            key.SetValue("PublicKeyToEncrypt", txtPublicKeyToEncrypt.Text);
+            key.SetValue("PathToSaveEncryptedFile", txtSaveEncryptedFile.Text);
+            key.SetValue("InitWithWindows", checkBoxStartWindows.Checked ? 1 : 0);
         }
     }
 }
