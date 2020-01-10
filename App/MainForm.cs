@@ -7,13 +7,11 @@ namespace App
 {
     public partial class MainForm : Form
     {
-        private bool isBackgroundMode;
         private bool isQuiting;
 
-        public MainForm(bool isBgMode)
+        public MainForm()
         {
             InitializeComponent();
-            isBackgroundMode = isBgMode;
             isQuiting = false;
         }
 
@@ -63,6 +61,8 @@ namespace App
                 saveFileDialog.Filter = "PGP File (*.pgp)|*.*";
                 saveFileDialog.FilterIndex = 1;
                 saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.DefaultExt = "pgp";
+                saveFileDialog.AddExtension = true;
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -136,20 +136,28 @@ namespace App
 
         private void UpdateInitWithWindows()
         {
+            Cursor = Cursors.WaitCursor;
 
-            if (checkBoxStartWindows.Checked)
+            try
             {
-                // app will start with windows
-                var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-                key.SetValue("SimplePGPUtil", $"\"{Application.ExecutablePath.ToString()}\" /background" );
-            }
-            else
+                
+                if (checkBoxStartWindows.Checked)
+                {
+                    // app will start with windows
+                    var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+                    RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
+                    key.SetValue("SimplePGPUtil", $"\"{Application.ExecutablePath.ToString()}\" /background");
+                }
+                else
+                {
+                    // app will NOT start with windows
+                    var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+                    RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
+                    key.DeleteValue("SimplePGPUtil", false);
+                }
+            } finally
             {
-                // app will NOT start with windows
-                var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-                key.DeleteValue("SimplePGPUtil", false);
+                Cursor = Cursors.Default;
             }
 
         }

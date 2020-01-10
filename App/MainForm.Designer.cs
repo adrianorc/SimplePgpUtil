@@ -252,6 +252,7 @@
             this.ClientSize = new System.Drawing.Size(864, 297);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.mainTabControl);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

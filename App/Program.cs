@@ -19,7 +19,7 @@ namespace App
             List<string> argsList = args.ToList();
             bool isBackgroundMode = argsList.Exists(s => s.Equals("/background"));
 
-            MainForm mainForm = new MainForm(isBackgroundMode);
+            MainForm mainForm = new MainForm();
 
             if (isBackgroundMode)
             {
