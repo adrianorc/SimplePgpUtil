@@ -43,6 +43,18 @@
             this.txtFileToEncrypt = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtPassphraseToDecrypt = new System.Windows.Forms.TextBox();
+            this.btnDecrypt = new System.Windows.Forms.Button();
+            this.btnSaveDecryptedFile = new System.Windows.Forms.Button();
+            this.txtSaveDecryptedFile = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.btnSelectPrivateKeyToDecrypt = new System.Windows.Forms.Button();
+            this.txtPrivateKeyToDecrypt = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnSelectFileToDecrypt = new System.Windows.Forms.Button();
+            this.txtFileToDecrypt = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.checkBoxStartWindows = new System.Windows.Forms.CheckBox();
             this.statusBar = new System.Windows.Forms.StatusStrip();
@@ -50,18 +62,7 @@
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStripNotificationIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.checkBoxSaveRetoreFileLocations = new System.Windows.Forms.CheckBox();
             this.mainTabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -192,16 +193,16 @@
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.label7);
-            this.tabPage2.Controls.Add(this.textBox4);
-            this.tabPage2.Controls.Add(this.button1);
-            this.tabPage2.Controls.Add(this.button2);
-            this.tabPage2.Controls.Add(this.textBox1);
+            this.tabPage2.Controls.Add(this.txtPassphraseToDecrypt);
+            this.tabPage2.Controls.Add(this.btnDecrypt);
+            this.tabPage2.Controls.Add(this.btnSaveDecryptedFile);
+            this.tabPage2.Controls.Add(this.txtSaveDecryptedFile);
             this.tabPage2.Controls.Add(this.label4);
-            this.tabPage2.Controls.Add(this.button3);
-            this.tabPage2.Controls.Add(this.textBox2);
+            this.tabPage2.Controls.Add(this.btnSelectPrivateKeyToDecrypt);
+            this.tabPage2.Controls.Add(this.txtPrivateKeyToDecrypt);
             this.tabPage2.Controls.Add(this.label5);
-            this.tabPage2.Controls.Add(this.button4);
-            this.tabPage2.Controls.Add(this.textBox3);
+            this.tabPage2.Controls.Add(this.btnSelectFileToDecrypt);
+            this.tabPage2.Controls.Add(this.txtFileToDecrypt);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -211,13 +212,119 @@
             this.tabPage2.Text = "Decrypt";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(22, 102);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(62, 13);
+            this.label7.TabIndex = 21;
+            this.label7.Text = "Passphrase";
+            // 
+            // txtPassphraseToDecrypt
+            // 
+            this.txtPassphraseToDecrypt.Location = new System.Drawing.Point(111, 99);
+            this.txtPassphraseToDecrypt.Name = "txtPassphraseToDecrypt";
+            this.txtPassphraseToDecrypt.PasswordChar = '*';
+            this.txtPassphraseToDecrypt.Size = new System.Drawing.Size(310, 20);
+            this.txtPassphraseToDecrypt.TabIndex = 20;
+            // 
+            // btnDecrypt
+            // 
+            this.btnDecrypt.Location = new System.Drawing.Point(25, 180);
+            this.btnDecrypt.Name = "btnDecrypt";
+            this.btnDecrypt.Size = new System.Drawing.Size(116, 23);
+            this.btnDecrypt.TabIndex = 19;
+            this.btnDecrypt.Text = "Decrypt";
+            this.btnDecrypt.UseVisualStyleBackColor = true;
+            this.btnDecrypt.Click += new System.EventHandler(this.btnDecrypt_Click);
+            // 
+            // btnSaveDecryptedFile
+            // 
+            this.btnSaveDecryptedFile.Location = new System.Drawing.Point(717, 137);
+            this.btnSaveDecryptedFile.Name = "btnSaveDecryptedFile";
+            this.btnSaveDecryptedFile.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveDecryptedFile.TabIndex = 18;
+            this.btnSaveDecryptedFile.Text = "Select...";
+            this.btnSaveDecryptedFile.UseVisualStyleBackColor = true;
+            this.btnSaveDecryptedFile.Click += new System.EventHandler(this.btnSaveDecryptedFile_Click);
+            // 
+            // txtSaveDecryptedFile
+            // 
+            this.txtSaveDecryptedFile.Location = new System.Drawing.Point(111, 137);
+            this.txtSaveDecryptedFile.Name = "txtSaveDecryptedFile";
+            this.txtSaveDecryptedFile.Size = new System.Drawing.Size(584, 20);
+            this.txtSaveDecryptedFile.TabIndex = 17;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(22, 140);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(48, 13);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "Save To";
+            // 
+            // btnSelectPrivateKeyToDecrypt
+            // 
+            this.btnSelectPrivateKeyToDecrypt.Location = new System.Drawing.Point(717, 60);
+            this.btnSelectPrivateKeyToDecrypt.Name = "btnSelectPrivateKeyToDecrypt";
+            this.btnSelectPrivateKeyToDecrypt.Size = new System.Drawing.Size(75, 23);
+            this.btnSelectPrivateKeyToDecrypt.TabIndex = 15;
+            this.btnSelectPrivateKeyToDecrypt.Text = "Select...";
+            this.btnSelectPrivateKeyToDecrypt.UseVisualStyleBackColor = true;
+            this.btnSelectPrivateKeyToDecrypt.Click += new System.EventHandler(this.btnSelectPrivateKeyToDecrypt_Click);
+            // 
+            // txtPrivateKeyToDecrypt
+            // 
+            this.txtPrivateKeyToDecrypt.Location = new System.Drawing.Point(111, 61);
+            this.txtPrivateKeyToDecrypt.Name = "txtPrivateKeyToDecrypt";
+            this.txtPrivateKeyToDecrypt.Size = new System.Drawing.Size(584, 20);
+            this.txtPrivateKeyToDecrypt.TabIndex = 14;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(22, 63);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(61, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Private Key";
+            // 
+            // btnSelectFileToDecrypt
+            // 
+            this.btnSelectFileToDecrypt.Location = new System.Drawing.Point(717, 23);
+            this.btnSelectFileToDecrypt.Name = "btnSelectFileToDecrypt";
+            this.btnSelectFileToDecrypt.Size = new System.Drawing.Size(75, 23);
+            this.btnSelectFileToDecrypt.TabIndex = 12;
+            this.btnSelectFileToDecrypt.Text = "Select...";
+            this.btnSelectFileToDecrypt.UseVisualStyleBackColor = true;
+            this.btnSelectFileToDecrypt.Click += new System.EventHandler(this.btnSelectFileToDecrypt_Click);
+            // 
+            // txtFileToDecrypt
+            // 
+            this.txtFileToDecrypt.Location = new System.Drawing.Point(111, 23);
+            this.txtFileToDecrypt.Name = "txtFileToDecrypt";
+            this.txtFileToDecrypt.Size = new System.Drawing.Size(584, 20);
+            this.txtFileToDecrypt.TabIndex = 11;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(22, 26);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(75, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "File to Decrypt";
+            // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.checkBoxSaveRetoreFileLocations);
             this.tabPage3.Controls.Add(this.checkBoxStartWindows);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(827, 218);
+            this.tabPage3.Size = new System.Drawing.Size(827, 225);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -270,106 +377,15 @@
             this.toolStripMenuItem1.Text = "Exit";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
-            // button1
+            // checkBoxSaveRetoreFileLocations
             // 
-            this.button1.Location = new System.Drawing.Point(25, 180);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(116, 23);
-            this.button1.TabIndex = 19;
-            this.button1.Text = "Decrypt";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(717, 137);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 18;
-            this.button2.Text = "Select...";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(111, 137);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(584, 20);
-            this.textBox1.TabIndex = 17;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(22, 140);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(48, 13);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "Save To";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(717, 60);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 15;
-            this.button3.Text = "Select...";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(111, 61);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(584, 20);
-            this.textBox2.TabIndex = 14;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(22, 63);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(61, 13);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "Private Key";
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(717, 23);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 12;
-            this.button4.Text = "Select...";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(111, 23);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(584, 20);
-            this.textBox3.TabIndex = 11;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(22, 26);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "File to Decrypt";
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(111, 99);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.PasswordChar = '*';
-            this.textBox4.Size = new System.Drawing.Size(310, 20);
-            this.textBox4.TabIndex = 20;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 102);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(62, 13);
-            this.label7.TabIndex = 21;
-            this.label7.Text = "Passphrase";
+            this.checkBoxSaveRetoreFileLocations.AutoSize = true;
+            this.checkBoxSaveRetoreFileLocations.Location = new System.Drawing.Point(16, 40);
+            this.checkBoxSaveRetoreFileLocations.Name = "checkBoxSaveRetoreFileLocations";
+            this.checkBoxSaveRetoreFileLocations.Size = new System.Drawing.Size(161, 17);
+            this.checkBoxSaveRetoreFileLocations.TabIndex = 1;
+            this.checkBoxSaveRetoreFileLocations.Text = "Save/Restore File Locations";
+            this.checkBoxSaveRetoreFileLocations.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -385,7 +401,6 @@
             this.Text = "Simple PGP Encrypt/Decrypt Util";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
-            this.VisibleChanged += new System.EventHandler(this.MainForm_VisibleChanged);
             this.mainTabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -424,17 +439,18 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStripNotificationIcon;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtPassphraseToDecrypt;
+        private System.Windows.Forms.Button btnDecrypt;
+        private System.Windows.Forms.Button btnSaveDecryptedFile;
+        private System.Windows.Forms.TextBox txtSaveDecryptedFile;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button btnSelectPrivateKeyToDecrypt;
+        private System.Windows.Forms.TextBox txtPrivateKeyToDecrypt;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button btnSelectFileToDecrypt;
+        private System.Windows.Forms.TextBox txtFileToDecrypt;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox checkBoxSaveRetoreFileLocations;
     }
 }
 

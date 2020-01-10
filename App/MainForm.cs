@@ -1,12 +1,14 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace App
 {
     public partial class MainForm : Form
     {
+        private static string REGISTRY_PATH = @"SOFTWARE\SimplePGPUtil";
         private bool isQuiting;
 
         public MainForm()
@@ -94,11 +96,12 @@ namespace App
                 return;
             }
 
+            btnEncrypt.Enabled = false;
+            Cursor = Cursors.WaitCursor;
+            toolStripStatusText.Text = "Encrypting...";
+
             try
             {
-                btnEncrypt.Enabled = false;
-                toolStripStatusText.Text = "Encrypting...";
-
                 using (FileStream streamPublicKey = File.Open(txtPublicKeyToEncrypt.Text, FileMode.Open))
                 using (Stream outputFile = File.Create(txtSaveEncryptedFile.Text))
                 {
@@ -107,13 +110,22 @@ namespace App
 
                 toolStripStatusText.Text = $"Done! Encrypted file saved to '{txtSaveEncryptedFile.Text}'";
 
+                // clear status text after 20s
+                Task.Delay(20000)
+                    .ContinueWith(task =>
+                    {
+                        toolStripStatusText.Text = "";
+                    });
+
             } catch (Exception ex)
             {
                 MessageBox.Show("Could not encrypt the file. Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                toolStripStatusText.Text = "";
             }
             finally
             {
                 btnEncrypt.Enabled = true;
+                Cursor = Cursors.Default;
             }
 
         }
@@ -167,28 +179,72 @@ namespace App
             TryRestoreValues();
         }
 
-        private void TryRestoreValues()
+        private void TrySaveValues()
         {
-            var path = @"SOFTWARE\SimplePGPUtil";
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-            if (key != null)
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(REGISTRY_PATH, true);
+            if (key == null)
             {
-                txtFileToEncrypt.Text = key.GetValue("FileToEncrypt") != null ? key.GetValue("FileToEncrypt").ToString() : "";
-                txtPublicKeyToEncrypt.Text = key.GetValue("PublicKeyToEncrypt") != null ? key.GetValue("PublicKeyToEncrypt").ToString() : "";
-                txtSaveEncryptedFile.Text = key.GetValue("PathToSaveEncryptedFile") != null ? key.GetValue("PathToSaveEncryptedFile").ToString() : "";
+                key = Registry.CurrentUser.CreateSubKey(REGISTRY_PATH);
+            }
 
-                int initWithWindows = 0;
-                if (key.GetValue("InitWithWindows") != null)
-                {
-                    bool r = int.TryParse(key.GetValue("InitWithWindows").ToString(), out initWithWindows);
-                }
+            // settings tab
+            key.SetValue("InitWithWindows", checkBoxStartWindows.Checked ? 1 : 0);
+            key.SetValue("SaveRestorePaths", checkBoxSaveRetoreFileLocations.Checked ? 1 : 0);
 
-                checkBoxStartWindows.Checked = initWithWindows != 0;
+            if (checkBoxSaveRetoreFileLocations.Checked)
+            {
+                // encrypt tab
+                key.SetValue("FileToEncrypt", txtFileToEncrypt.Text);
+                key.SetValue("PublicKeyToEncrypt", txtPublicKeyToEncrypt.Text);
+                key.SetValue("PathToSaveEncryptedFile", txtSaveEncryptedFile.Text);
+
+                // decrypt tab
+                key.SetValue("FileToDecrypt", txtFileToDecrypt.Text);
+                key.SetValue("PrivateKeyToDecrypt", txtPrivateKeyToDecrypt.Text);
+                key.SetValue("PathToSaveDecryptedFile", txtSaveDecryptedFile.Text);
             }
         }
 
-        private void MainForm_VisibleChanged(object sender, EventArgs e)
+        private void TryRestoreValues()
         {
+            Func<object, string> GetString = input => input != null ? input.ToString() : "";
+            Func<object, int, int> GetIntOrDef = (input, def) =>
+            {
+                if (input == null)
+                {
+                    return def;
+                }
+
+                if (Int32.TryParse(input.ToString(), out int result))
+                {
+                    return result;
+                }
+
+                return def;
+            };
+
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(REGISTRY_PATH, true);
+            if (key == null)
+            {
+                return;
+            }
+
+            // settings tab
+            checkBoxStartWindows.Checked = GetIntOrDef(key.GetValue("InitWithWindows"), 0) != 0;
+            checkBoxSaveRetoreFileLocations.Checked = GetIntOrDef(key.GetValue("SaveRestorePaths"), 0) != 0;
+
+            if (checkBoxSaveRetoreFileLocations.Checked)
+            {
+                // encrypt tab
+                txtFileToEncrypt.Text = GetString(key.GetValue("FileToEncrypt"));
+                txtPublicKeyToEncrypt.Text = GetString(key.GetValue("PublicKeyToEncrypt"));
+                txtSaveEncryptedFile.Text = GetString(key.GetValue("PathToSaveEncryptedFile"));
+
+                // decrypt tab
+                txtFileToDecrypt.Text = GetString(key.GetValue("FileToDecrypt"));
+                txtPrivateKeyToDecrypt.Text = GetString(key.GetValue("PrivateKeyToDecrypt"));
+                txtSaveDecryptedFile.Text = GetString(key.GetValue("PathToSaveDecryptedFile"));
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -202,19 +258,98 @@ namespace App
             }
         }
 
-        private void TrySaveValues()
+        private void btnSelectFileToDecrypt_Click(object sender, EventArgs e)
         {
-            var path = @"SOFTWARE\SimplePGPUtil";
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(path, true);
-            if (key == null)
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                key = Registry.CurrentUser.CreateSubKey(path);
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "PGP files (*.pgp)|*.pgp|All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtFileToDecrypt.Text = openFileDialog.FileName;
+                }
             }
 
-            key.SetValue("FileToEncrypt", txtFileToEncrypt.Text);
-            key.SetValue("PublicKeyToEncrypt", txtPublicKeyToEncrypt.Text);
-            key.SetValue("PathToSaveEncryptedFile", txtSaveEncryptedFile.Text);
-            key.SetValue("InitWithWindows", checkBoxStartWindows.Checked ? 1 : 0);
+        }
+
+        private void btnSelectPrivateKeyToDecrypt_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtPrivateKeyToDecrypt.Text = openFileDialog.FileName;
+                }
+            }
+
+        }
+
+        private void btnSaveDecryptedFile_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = "c:\\";
+                saveFileDialog.Filter = "All files (*.*)|*.*";
+                saveFileDialog.FilterIndex = 1;
+                saveFileDialog.RestoreDirectory = true;
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtSaveDecryptedFile.Text = saveFileDialog.FileName;
+                }
+            }
+
+        }
+
+        private void btnDecrypt_Click(object sender, EventArgs e)
+        {
+
+            btnDecrypt.Enabled = false;
+            Cursor = Cursors.WaitCursor;
+            toolStripStatusText.Text = $"Decrypting...";
+
+            try
+            {
+                using (Stream inputFile = File.OpenRead(txtFileToDecrypt.Text))
+                using (Stream privateKey = File.OpenRead(txtPrivateKeyToDecrypt.Text))
+                {
+                    PGPHelper.DecryptStream(
+                        inputFile,
+                        privateKey,
+                        string.IsNullOrWhiteSpace(txtPassphraseToDecrypt.Text) ? null : txtPassphraseToDecrypt.Text.ToCharArray(),
+                        txtSaveDecryptedFile.Text
+                    );
+
+                }
+
+                toolStripStatusText.Text = $"Done! Clear file saved to '{txtSaveDecryptedFile.Text}'";
+
+                // clear status text after 20s
+                Task.Delay(20000)
+                    .ContinueWith(task =>
+                    {
+                        toolStripStatusText.Text = "";
+                    });
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not decrypt the file. Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                toolStripStatusText.Text = "";
+            }
+            finally
+            {
+                btnDecrypt.Enabled = true;
+                Cursor = Cursors.Default;
+            }
         }
     }
 }
